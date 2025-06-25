@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.cubancore.pianotyping"
-        minSdk = 24
+        minSdk = 29
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -36,6 +36,12 @@ android {
     }
     buildFeatures {
         compose = true
+    }
+    ndkVersion = "27.0.11902837 rc2"
+    externalNativeBuild {
+        cmake {
+            path("src/main/cpp/CMakeLists.txt")
+        }
     }
 }
 
