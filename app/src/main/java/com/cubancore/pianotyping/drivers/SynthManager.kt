@@ -6,7 +6,7 @@ import com.robsonmartins.androidmidisynth.SynthManager
 class SynthDriver: SynthManager {
     constructor(context: Context): super(context)
 
-    constructor(context: Context, soundfontPath: String, volume: Int) : this(context) {
+    constructor(context: Context, soundfontPath: String, volume: Int = 127) : this(context) {
         loadSF(soundfontPath)
         setVolume(volume)
     }
