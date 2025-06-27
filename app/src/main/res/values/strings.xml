@@ -5,4 +5,10 @@
     <string name="pause_recording">pause recording</string>
     <string name="resume_recording">resume recording</string>
     <string name="stop_recording">stop recording</string>
+    <string name="recording_title">Title</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="save_recording">Save Recording</string>
+    <string name="error_recording_empty_value">Recording title can\'t be empty</string>
+    <string name="recording_compositor">Recording Compositor</string>
 </resources>

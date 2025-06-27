@@ -16,9 +16,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,14 +31,34 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cubancore.pianotyping.R
 import com.cubancore.pianotyping.RecordingsManagerViewModel
+import com.cubancore.pianotyping.data.Recording
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 
 @Composable
+@OptIn(kotlin.uuid.ExperimentalUuidApi::class)
 fun MainScreen(
     onNoteOn: (Int, Int) -> Unit,
     recordingsManager: RecordingsManagerViewModel
 ) {
+    val recordingToEdit: MutableState<Recording?> = rememberSaveable { mutableStateOf(null) }
+
+    if (recordingToEdit.value != null) {
+        EditRecordingDialog(
+            title = "",
+            compositor = null,
+            onSaveRequest = { title, compositor ->
+                recordingsManager.updateRecordingMetadata(
+                    uuid = recordingToEdit.value?.uuid,
+                    title = title,
+                    compositor = compositor,
+                )
+                recordingToEdit.value = null
+            },
+            onDismissRequest = { recordingToEdit.value = null }
+        )
+    }
+
     Column {
         Surface (
             modifier = Modifier.padding(vertical = 5.dp, horizontal = 15.dp)
@@ -92,7 +115,9 @@ fun MainScreen(
                             }
                         }
                         Button (
-                            onClick = { recordingsManager.stopRecording() },
+                            onClick = {
+                               recordingToEdit.value = recordingsManager.stopRecording()
+                            },
                             modifier = Modifier.size(35.dp),
                             shape = RoundedCornerShape(5.dp),
                             contentPadding = PaddingValues(0.dp),

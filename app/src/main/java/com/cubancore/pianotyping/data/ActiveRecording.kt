@@ -3,8 +3,10 @@ package com.cubancore.pianotyping.data
 import android.util.Log
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
-@OptIn(ExperimentalTime::class)
+@OptIn(ExperimentalTime::class, ExperimentalUuidApi::class)
 class ActiveRecording {
     private val _startedAt: Long = Clock.System.now().toEpochMilliseconds()
     private val _recording: MutableList<Record> = mutableListOf()
@@ -48,6 +50,7 @@ class ActiveRecording {
 
     fun getRecording(title: String, compositor: String?): Recording {
         return Recording(
+            uuid = Uuid.random(),
             title = title,
             compositor = compositor,
             records = _recording.toList()
