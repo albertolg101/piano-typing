@@ -33,7 +33,7 @@ fun Piano(
     ) {
         val whiteKeyWidth = this.maxWidth / visibleKeys
         val blackKeyWidth = (this.maxWidth.value / (visibleKeys - 1) / 1.8).dp
-        val blackKeyHeight = (this.maxHeight.value / 1.5).dp
+        val blackKeyHeight = (this.maxHeight.value / 1.6).dp
 
         Row {
             repeat(visibleKeys) { index ->
