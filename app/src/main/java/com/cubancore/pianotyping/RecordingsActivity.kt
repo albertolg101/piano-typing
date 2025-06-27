@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -47,6 +48,15 @@ class RecordingsActivity : ComponentActivity() {
                             title = {
                                 Text(stringResource(R.string.recordings_activity_title))
                             },
+                            actions = {
+                                Button (
+                                  onClick = { throw RuntimeException("Gratitude")}
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.send_gratitude)
+                                    )
+                                }
+                            }
                         )
                     }
                 ) { innerPadding ->

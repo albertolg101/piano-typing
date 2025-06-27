@@ -17,4 +17,5 @@
     <string name="delete_recording">Delete Recording</string>
     <string name="edit_recording_metadata">Edit Recording Metadata</string>
     <string name="upload_recording">Upload Recording</string>
+    <string name="send_gratitude">Send Gratitude</string>
 </resources>
