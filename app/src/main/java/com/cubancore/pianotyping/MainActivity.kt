@@ -3,22 +3,16 @@ package com.cubancore.pianotyping
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.util.Log
-import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -31,32 +25,23 @@ import com.cubancore.pianotyping.ui.theme.PianoTypingTheme
 class MainActivity : ComponentActivity() {
 
     companion object {
-        init { System.loadLibrary("synth-lib") }
+        init {
+            System.loadLibrary("synth-lib")
+        }
     }
 
     private lateinit var midiDriver: MidiDriver
     private lateinit var synthDriver: SynthDriver
+    private val recordingsManager: RecordingsManagerViewModel by viewModels()
+    private lateinit var mainMidiListener: MainMidiListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         midiDriver = MidiDriver(this)
         synthDriver = SynthDriver(this, "AcousticGrandPiano.sf2")
-
-        midiDriver.addListener(object : MidiListener {
-            override fun onNoteOn(note: Int, velocity: Int) {
-                super.onNoteOn(note, velocity)
-                Log.d("DEBUG", "Note On  | Note: $note, Velocity: $velocity")
-                synthDriver.noteOn(note, velocity)
-            }
-            override fun onNoteOff(note: Int) {
-                super.onNoteOff(note)
-                Log.d("DEBUG", "Note Off | Note: $note")
-                synthDriver.noteOff(note)
-            }
-        })
-
-
+        mainMidiListener = MainMidiListener(synthDriver, recordingsManager)
+        midiDriver.addListener(mainMidiListener)
 
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE
         enableEdgeToEdge()
@@ -74,7 +59,7 @@ class MainActivity : ComponentActivity() {
                             .fillMaxSize()
                             .displayCutoutPadding()
                     ) {
-                        MainScreen(synthDriver)
+                        MainScreen(mainMidiListener::onNoteOn, recordingsManager)
                     }
                 }
             }
@@ -89,11 +74,32 @@ class MainActivity : ComponentActivity() {
     private fun setFullScreen() {
         val insetsController =
             WindowCompat.getInsetsController(window, window.decorView)
-        if (insetsController != null) {
-            insetsController.systemBarsBehavior =
-                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-            insetsController.hide(WindowInsetsCompat.Type.statusBars())
-            insetsController.hide(WindowInsetsCompat.Type.navigationBars())
+        insetsController.systemBarsBehavior =
+            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        insetsController.hide(WindowInsetsCompat.Type.statusBars())
+        insetsController.hide(WindowInsetsCompat.Type.navigationBars())
+    }
+}
+
+class MainMidiListener(
+    private val synthDriver: SynthDriver,
+    private val recordingsManager: RecordingsManagerViewModel
+) : MidiListener {
+    override fun onNoteOn(note: Int, velocity: Int) {
+        super.onNoteOn(note, velocity)
+        Log.d("DEBUG", "Note On  | Note: $note, Velocity: $velocity")
+        synthDriver.noteOn(note, velocity)
+        if (recordingsManager.isRecording.value ?: false) {
+            recordingsManager.currentRecording.value!!.addRecord(note, velocity)
+        }
+    }
+
+    override fun onNoteOff(note: Int) {
+        super.onNoteOff(note)
+        Log.d("DEBUG", "Note Off | Note: $note")
+        synthDriver.noteOff(note)
+        if (recordingsManager.isRecording.value ?: false) {
+            recordingsManager.currentRecording.value!!.addRecord(note, 0)
         }
     }
 }

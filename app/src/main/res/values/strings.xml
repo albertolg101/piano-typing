@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Piano Typing</string>
+    <string name="records">Records</string>
+    <string name="recording">Recording</string>
+    <string name="pause_recording">pause recording</string>
+    <string name="resume_recording">resume recording</string>
+    <string name="stop_recording">stop recording</string>
 </resources>
