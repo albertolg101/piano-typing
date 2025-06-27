@@ -17,6 +17,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
@@ -30,9 +32,26 @@ import com.cubancore.pianotyping.extensions.toDurationString
 import com.cubancore.pianotyping.model.RecordingModel
 
 @Composable
-fun RecordingCard(recording: RecordingModel, isSelected: Boolean) {
+fun RecordingCard(
+    recording: RecordingModel,
+    isSelected: Boolean,
+    onPatch: (String, String?) -> Unit,
+) {
     val compositor = recording.compositor ?: stringResource(R.string.unknown_compositor)
     val duration = recording.records.maxOf { it.timestamp } .toDurationString()
+    val isEditRecordDialogOpened = rememberSaveable { mutableStateOf(false) }
+
+    if (isEditRecordDialogOpened.value) {
+        EditRecordingDialog(
+            title = recording.title,
+            compositor = recording.compositor,
+            onSaveRequest = { title, compositor ->
+                onPatch(title, compositor)
+                isEditRecordDialogOpened.value = false
+            },
+            onDismissRequest = { isEditRecordDialogOpened.value = false }
+        )
+    }
 
     Card (
         modifier = Modifier.fillMaxWidth(),
@@ -99,7 +118,7 @@ fun RecordingCard(recording: RecordingModel, isSelected: Boolean) {
                             )
                         }
                         IconButton (
-                            onClick = {},
+                            onClick = { isEditRecordDialogOpened.value = true },
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Edit,

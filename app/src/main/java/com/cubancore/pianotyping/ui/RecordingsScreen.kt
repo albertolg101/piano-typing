@@ -46,7 +46,17 @@ fun RecordingsScreen(recordingsManager: RecordingsManagerViewModel) {
                 Box (
                     modifier = Modifier.clickable { selectedItemUuid.value = recording.uuid }
                 ) {
-                    RecordingCard(recording, selectedItemUuid.value == recording.uuid)
+                    RecordingCard(
+                        recording = recording,
+                        isSelected = selectedItemUuid.value == recording.uuid,
+                        onPatch = { title, compositor ->
+                            recordingsManager.updateRecordingMetadata(
+                                uuid = recording.uuid,
+                                title = title,
+                                compositor = compositor
+                            )
+                        }
+                    )
                 }
             }
         }
