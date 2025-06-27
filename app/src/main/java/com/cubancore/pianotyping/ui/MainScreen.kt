@@ -1,6 +1,5 @@
 package com.cubancore.pianotyping.ui
 
-import android.text.format.DateUtils
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -31,7 +30,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cubancore.pianotyping.R
 import com.cubancore.pianotyping.RecordingsManagerViewModel
-import com.cubancore.pianotyping.data.Recording
+import com.cubancore.pianotyping.extensions.toDurationString
+import com.cubancore.pianotyping.model.RecordingModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 
@@ -39,9 +39,10 @@ import kotlinx.coroutines.isActive
 @OptIn(kotlin.uuid.ExperimentalUuidApi::class)
 fun MainScreen(
     onNoteOn: (Int, Int) -> Unit,
+    onRecordingsOpen: () -> Unit,
     recordingsManager: RecordingsManagerViewModel
 ) {
-    val recordingToEdit: MutableState<Recording?> = rememberSaveable { mutableStateOf(null) }
+    val recordingToEdit: MutableState<RecordingModel?> = rememberSaveable { mutableStateOf(null) }
 
     if (recordingToEdit.value != null) {
         EditRecordingDialog(
@@ -141,7 +142,7 @@ fun MainScreen(
                             value = currentRecording?.elapsed ?: 0
                         }
                     }
-                    val elapsedString = DateUtils.formatElapsedTime(elapsed / 1000)
+                    val elapsedString = elapsed.toDurationString()
                     Text(
                         text = "${stringResource(R.string.recording)}: $elapsedString",
                         fontSize = 20.sp
@@ -150,7 +151,7 @@ fun MainScreen(
 
                 // Recordings
                 Button (
-                    onClick = { }
+                    onClick = onRecordingsOpen
                 ) {
                     Text(text = stringResource(R.string.records))
                 }

@@ -1,5 +1,6 @@
 package com.cubancore.pianotyping
 
+import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.util.Log
@@ -59,7 +60,14 @@ class MainActivity : ComponentActivity() {
                             .fillMaxSize()
                             .displayCutoutPadding()
                     ) {
-                        MainScreen(mainMidiListener::onNoteOn, recordingsManager)
+                        MainScreen(
+                            onNoteOn = mainMidiListener::onNoteOn,
+                            onRecordingsOpen = {
+                                val intent = Intent(this@MainActivity, RecordingsActivity::class.java)
+                                startActivity(intent)
+                            },
+                            recordingsManager = recordingsManager
+                        )
                     }
                 }
             }

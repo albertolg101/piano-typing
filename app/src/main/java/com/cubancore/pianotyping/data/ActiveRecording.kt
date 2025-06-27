@@ -1,6 +1,7 @@
 package com.cubancore.pianotyping.data
 
 import android.util.Log
+import com.cubancore.pianotyping.model.RecordingModel
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
@@ -48,8 +49,8 @@ class ActiveRecording {
         _pausedAt = null
     }
 
-    fun getRecording(title: String, compositor: String?): Recording {
-        return Recording(
+    fun getRecording(title: String, compositor: String?): RecordingModel {
+        return RecordingModel(
             uuid = Uuid.random(),
             title = title,
             compositor = compositor,

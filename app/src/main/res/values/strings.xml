@@ -11,4 +11,10 @@
     <string name="save_recording">Save Recording</string>
     <string name="error_recording_empty_value">Recording title can\'t be empty</string>
     <string name="recording_compositor">Recording Compositor</string>
+    <string name="recordings_activity_title">Recordings</string>
+    <string name="back">Back</string>
+    <string name="unknown_compositor">unknown</string>
+    <string name="delete_recording">Delete Recording</string>
+    <string name="edit_recording_metadata">Edit Recording Metadata</string>
+    <string name="upload_recording">Upload Recording</string>
 </resources>

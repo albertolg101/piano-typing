@@ -1,19 +1,24 @@
 package com.cubancore.pianotyping
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import com.cubancore.pianotyping.data.ActiveRecording
-import com.cubancore.pianotyping.data.Recording
+import com.cubancore.pianotyping.model.RecordingModel
+import com.cubancore.pianotyping.repository.AppDatabase
+import com.cubancore.pianotyping.repository.RecordingRepository
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
-class RecordingsManagerViewModel : ViewModel() {
-    private val _recordings: MutableLiveData<MutableMap<Uuid, Recording>> =
-        MutableLiveData(mutableMapOf())
-    val recordings: LiveData<Map<Uuid, Recording>> = _recordings.map { it.toMap() }
+class RecordingsManagerViewModel(application: Application) : AndroidViewModel(application) {
+
+    val database = AppDatabase.getDatabase(application)
+    val repository = RecordingRepository(database.recordingDao())
+
+    fun getRecordings(): LiveData<List<RecordingModel>> = repository.allRecordings
 
     private val _currentRecording: MutableLiveData<ActiveRecording?> = MutableLiveData()
     val currentRecording: LiveData<ActiveRecording?> = _currentRecording
@@ -31,21 +36,18 @@ class RecordingsManagerViewModel : ViewModel() {
         _currentRecording.value?.pause()
     }
 
-    fun stopRecording(title: String = "Untitled", compositor: String? = null): Recording? {
-        val recording =_currentRecording.value?.getRecording(title, compositor)
+    fun stopRecording(title: String = "Untitled", compositor: String? = null): RecordingModel? {
+        val recording = _currentRecording.value?.getRecording(title, compositor)
         _currentRecording.value = null
         if (recording != null) {
-            _recordings.value?.set(recording.uuid, recording)
+            repository.insert(recording)
         }
         return recording
     }
 
-    fun updateRecordingMetadata(uuid: Uuid?, title: String?, compositor: String?) {
-        val recording = _recordings.value?.get(uuid)
-
-        if (recording != null) {
-            recording.title = title ?: recording.title
-            recording.compositor = compositor ?: recording.compositor
+    fun updateRecordingMetadata(uuid: Uuid?, title: String, compositor: String?) {
+        if (uuid != null) {
+            repository.patch(uuid, title, compositor)
         }
     }
 }
