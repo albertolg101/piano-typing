@@ -6,10 +6,11 @@ import android.media.midi.MidiManager
 import android.media.midi.MidiReceiver
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.widget.Toast
 
 class MidiDriver(val context: Context) {
-    private class CustomMidiReceiver(val listeners: MutableList<MidiListener>): MidiReceiver() {
+    class CustomMidiReceiver(val listeners: MutableList<MidiListener>): MidiReceiver() {
         override fun onSend(msg: ByteArray?, offset: Int, count: Int, timestamp: Long) {
             // reference: https://learn.sparkfun.com/tutorials/midi-tutorial/all#messages
             if (msg != null) {
@@ -85,7 +86,7 @@ class MidiDriver(val context: Context) {
         }
     }
 
-    private class CustomDeviceCallback(
+    class CustomDeviceCallback(
         val midiManager: MidiManager,
         val context: Context,
         val midiReceiver: CustomMidiReceiver,
